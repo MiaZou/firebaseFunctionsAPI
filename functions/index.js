@@ -22,15 +22,33 @@ const app = express();
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
-app.post('/:id/hemisphere', async (req, res) => {
-    const body = req.body;
+// update hemisphere info
+app.put("/:id/hemisphere", async (req, res) => {
+    try {
+        await admin.firestore().collection("users").doc(req.params.id).update({
+            hemisphere: req.params.hemisphere
+        });
 
-    await admin.firestore().collection('users').doc(req.params.id).update({
-        ...body,
-        hemisphere: req.params.hemisphere
-    });
+        res.status(200).send("Success");
+    } catch (error) {
+        logger.error(error);
+        res.status(400).send(error);
+    }
+    return;
+});
 
-    res.status(200).send();
+// get user info
+app.get("/:id", async (req, res) => {
+    try {
+        const snapshot = await admin.firestore().collection("users").doc(req.params.id).get();
+        
+        const userData = snapshot.data();
+        res.status(200).send(JSON.stringify({...userData}));
+    } catch (error) {
+        logger.error(error);
+        res.status(400).send(error);
+    }
+    return;
 });
 
 exports.user = functions.https.onRequest(app);
