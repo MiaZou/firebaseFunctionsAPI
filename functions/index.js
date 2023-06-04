@@ -10,10 +10,32 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
+const functions = require("firebase-functions");
+const express = require("express");
+const cors = require("cors");
+
+const admin = require("firebase-admin");
+admin.initializeApp();
+
+const app = express();
+
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
-exports.helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
+app.post('/:id/hemisphere', async (req, res) => {
+    const body = req.body;
+
+    await admin.firestore().collection('users').doc(req.params.id).update({
+        ...body,
+        hemisphere: req.params.hemisphere
+    });
+
+    res.status(200).send();
 });
+
+exports.user = functions.https.onRequest(app);
+
+exports.helloWorld = onRequest((request, response) => {
+    logger.info("Hello logs!", {structuredData: true});
+    response.send("Hello from Firebase!");
+  });
