@@ -23,10 +23,10 @@ const app = express();
 // https://firebase.google.com/docs/functions/get-started
 
 // update hemisphere info
-app.put("/:id/hemisphere", async (req, res) => {
+app.put("/hemisphere/:id/:hemisphere", async (req, res) => {
     try {
         await admin.firestore().collection("users").doc(req.params.id).update({
-            hemisphere: req.params.hemisphere
+            hemisphere: parseInt(req.params.hemisphere),
         });
 
         res.status(200).send("Success");
@@ -38,7 +38,7 @@ app.put("/:id/hemisphere", async (req, res) => {
 });
 
 // get user info
-app.get("/:id", async (req, res) => {
+app.get("/weather/:id", async (req, res) => {
     try {
         const snapshot = await admin.firestore().collection("users").doc(req.params.id).get();
         
@@ -52,8 +52,3 @@ app.get("/:id", async (req, res) => {
 });
 
 exports.user = functions.https.onRequest(app);
-
-exports.helloWorld = onRequest((request, response) => {
-    logger.info("Hello logs!", {structuredData: true});
-    response.send("Hello from Firebase!");
-  });
