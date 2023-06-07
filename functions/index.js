@@ -7,12 +7,10 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
 const functions = require("firebase-functions");
 const express = require("express");
-const cors = require("cors");
 
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -44,6 +42,32 @@ app.get("/weather/:id", async (req, res) => {
         
         const userData = snapshot.data();
         res.status(200).send(JSON.stringify({...userData}));
+    } catch (error) {
+        logger.error(error);
+        res.status(400).send(error);
+    }
+    return;
+});
+
+// add weather data input
+app.put("/weatherdata/:id", async (req, res) => {
+    const body = req.body;
+    try {
+        const snapshot = await admin.firestore().collection("users").doc(req.params.id).get();
+        const weatherData = snapshot.data().weatherData;
+        const newWeatherData = [
+            ...weatherData,
+            {
+                date: body.date,
+                specialPattern: body.specialPattern,
+                weather: body.weather,
+                possibleWeather: body.possibleWeather,
+            }
+        ]
+        await admin.firestore().collection("users").doc(req.params.id).update({
+            weatherData: newWeatherData,
+        });
+        res.status(200).send("Weather data entered successfully.");
     } catch (error) {
         logger.error(error);
         res.status(400).send(error);
