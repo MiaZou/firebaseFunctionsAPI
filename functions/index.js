@@ -22,57 +22,58 @@ const app = express();
 
 // update hemisphere info
 app.put("/hemisphere/:id/:hemisphere", async (req, res) => {
-    try {
-        await admin.firestore().collection("users").doc(req.params.id).update({
-            hemisphere: parseInt(req.params.hemisphere),
-        });
+  try {
+    await admin.firestore().collection("users").doc(req.params.id).update({
+      hemisphere: parseInt(req.params.hemisphere),
+    });
 
-        res.status(200).send("Success");
-    } catch (error) {
-        logger.error(error);
-        res.status(400).send(error);
-    }
-    return;
+    res.status(200).send("Success");
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send(error);
+  }
+  return;
 });
 
 // get user info
 app.get("/weather/:id", async (req, res) => {
-    try {
-        const snapshot = await admin.firestore().collection("users").doc(req.params.id).get();
-        
-        const userData = snapshot.data();
-        res.status(200).send(JSON.stringify({...userData}));
-    } catch (error) {
-        logger.error(error);
-        res.status(400).send(error);
-    }
-    return;
+  try {
+    const snapshot = await admin.firestore().collection("users")
+        .doc(req.params.id).get();
+    const userData = snapshot.data();
+    res.status(200).send(JSON.stringify({...userData}));
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send(error);
+  }
+  return;
 });
 
 // add weather data input
 app.put("/weatherdata/:id", async (req, res) => {
-    const body = req.body;
-    try {
-        const snapshot = await admin.firestore().collection("users").doc(req.params.id).get();
-        const weatherData = snapshot.data().weatherData;
-        const newWeatherData = [
-            ...weatherData,
-            {
-                date: body.date,
-                specialPattern: body.specialPattern,
-                weather: body.weather,
-                possibleWeather: body.possibleWeather,
-            }
-        ]
-        await admin.firestore().collection("users").doc(req.params.id).update({
-            weatherData: newWeatherData,
-        });
-        res.status(200).send("Weather data entered successfully.");
-    } catch (error) {
-        logger.error(error);
-        res.status(400).send(error);
-    }
-    return;
+  const body = req.body;
+  try {
+    const snapshot = await admin.firestore().collection("users")
+        .doc(req.params.id).get();
+    const weatherData = snapshot.data().weatherData;
+    const newWeatherData = [
+      ...weatherData,
+      {
+        date: body.date,
+        specialPattern: body.specialPattern,
+        weather: body.weather,
+        possibleWeather: body.possibleWeather,
+      },
+    ];
+    await admin.firestore().collection("users").doc(req.params.id).update({
+      weatherData: newWeatherData,
+    });
+    res.status(200).send("Weather data entered successfully.");
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send(error);
+  }
+  return;
 });
 
 exports.user = functions.https.onRequest(app);
