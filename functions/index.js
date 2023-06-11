@@ -20,14 +20,14 @@ const app = express();
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
-// update hemisphere info
-app.put("/hemisphere/:id/:hemisphere", async (req, res) => {
+// create account
+app.post("/users/:uid/:hemisphere", async (req, res) => {
   try {
-    await admin.firestore().collection("users").doc(req.params.id).update({
-      hemisphere: parseInt(req.params.hemisphere),
+    await admin.firestore().collection("users").doc(req.params.uid).create({
+      UID: req.params.uid,
+      hemisphere: req.params.hemisphere,
     });
-
-    res.status(200).send("Success");
+    res.status(200).send("Account created successfully!");
   } catch (error) {
     logger.error(error);
     res.status(400).send(error);
