@@ -24,7 +24,7 @@ const app = express();
 app.post("/users/:uid/:hemisphere", async (req, res) => {
   try {
     await admin.firestore().collection("users").doc(req.params.uid).create({
-      UID: req.params.uid,
+      uid: req.params.uid,
       hemisphere: req.params.hemisphere,
     });
     res.status(200).send("Account created successfully!");
