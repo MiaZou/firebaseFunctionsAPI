@@ -61,7 +61,7 @@ app.put("/weatherdata/:id", async (req, res) => {
       {
         date: body.date,
         specialPattern: body.specialPattern,
-        weather: body.weather,
+        weatherTypes: body.weatherTypes,
         possibleWeather: body.possibleWeather,
       },
     ];
