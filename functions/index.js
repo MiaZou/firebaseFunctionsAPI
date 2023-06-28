@@ -62,13 +62,26 @@ app.put("/weatherdata/:id", async (req, res) => {
         date: body.date,
         specialPattern: body.specialPattern,
         weatherTypes: body.weatherTypes,
-        possibleWeather: body.possibleWeather,
       },
     ];
     await admin.firestore().collection("users").doc(req.params.id).update({
       weatherData: newWeatherData,
     });
     res.status(200).send("Weather data entered successfully.");
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send(error);
+  }
+  return;
+});
+
+// add weather seed data
+app.put("/weatherseed/:id/:weatherseed", async (req, res) => {
+  try {
+    await admin.firestore().collection("users").doc(req.params.id).update({
+      weatherSeed: req.params.weatherseed,
+    });
+    res.status(200).send("Weather seed has been added.");
   } catch (error) {
     logger.error(error);
     res.status(400).send(error);
